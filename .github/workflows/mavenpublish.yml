@@ -1,30 +1,25 @@
-# This workflow will build a package using Maven and then publish it to GitHub packages when a release is created
-# For more information see: https://github.com/actions/setup-java#apache-maven-with-a-settings-path
-
-name: QuickMedia
-
-on:
-  release:
-    types: [created]
-
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
+    runs-on: self-hosted
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 1.8
+    - continue-on-error: true
+      uses: actions/checkout@v2
+    - continue-on-error: true
+      name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-        server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
-        settings-path: ${{ github.workspace }} # location for the settings.xml file
-
-    - name: Build with Maven
+        server-id: github
+        settings-path: ${{ github.workspace }}
+    - continue-on-error: true
+      name: Build with Maven
       run: mvn -B package -Dmaven.test.skip --file pom.xml
-
-    - name: Publish to GitHub Packages Apache Maven
-      run: mvn deploy -Dmaven.test.skip -s $GITHUB_WORKSPACE/settings.xml
+    - continue-on-error: true
       env:
         GITHUB_TOKEN: ${{ github.token }}
+      name: Publish to GitHub Packages Apache Maven
+      run: mvn deploy -Dmaven.test.skip -s $GITHUB_WORKSPACE/settings.xml
+name: QuickMedia
+on:
+  repository_dispatch:
+    types: trigger-ga___mavenpublish.yml
